@@ -22,7 +22,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "26"
+          node-version: "24"
 
       # 3. 安装混淆工具
       - name: Install obfuscator
