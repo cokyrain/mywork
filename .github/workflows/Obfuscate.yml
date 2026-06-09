@@ -9,7 +9,7 @@ on:
   workflow_dispatch: 
 
 env:
-  REPO: "cokyrain/edgetunnel"
+  REPO: "cokyrain/edge"
 
 permissions:
   contents: write
