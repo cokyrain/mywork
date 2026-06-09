@@ -1,4 +1,4 @@
-name: Auto Obfuscate edgetunnel
+name: Auto Obfuscate
 
 on:
   push:
