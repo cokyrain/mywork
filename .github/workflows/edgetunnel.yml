@@ -1,0 +1,56 @@
+name: Auto Obfuscate edgetunnel
+
+on:   :
+  # 1. 推送代码时触发
+  push:   推动:
+    branches:   分支:
+      - main   ——主要
+  # 2. 每天凌晨 2 点自动执行 (北京时间 +8)
+  schedule:   时间表:
+    - cron: "0 6 * * *" 
+
+permissions:   权限:
+  contents: write   内容:写
+
+jobs:   工作:
+  build:   构建:
+    runs-on: ubuntu-latest   运行于：ubuntu-latest
+    steps:   步骤:
+      # 1. 设置 Node.js 环境
+      - name: Set up Node.js   - 名称：设置 Node.js
+        uses: actions/checkout@v4   使用：actions/checkout@v4
+        with:   :
+          node-version: "20"
+
+      # 2. 安装混淆工具
+      - name: Install obfuscator
+        run: npm install -g javascript-obfuscator
+
+      # 3. 从 odaychina/edgetunnel 拉取最新 _worker.js
+      # 使用 raw.githubusercontent.com 直接下载文件，不保留 Git 历史
+      - name: Download Source File
+        run: |   运行:|
+          wget -O origin.js https://raw.githubusercontent.com/cokyrain/edgetunnel/main/_worker.js
+
+      # 4. 执行混淆操作
+      # 这里的配置针对 Cloudflare Workers 的 1101 错误做了优化
+      - name: Obfuscate JS
+        run: |   运行:|
+          javascript-obfuscator origin.js --output _worker.js \
+          --compact true \
+          --string-array true \
+          --string-array-encoding 'base64' \
+          --string-array-threshold 0.75 \
+          --identifier-names-generator hexadecimal \
+          --rename-globals true
+
+      # 5. 强制提交并推送到当前仓库
+      # skip_checkout 和 skip_fetch 是关键，因为我们不需要旧的历史记录
+      - name: Commit and Push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:   :
+          branch: m   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米   米ain   主要分支   米:
+          commit_message: '🤖 Auto obfuscate edgetunnel to bypass 1101'
+          file_pattern: _worker.js
+          skip_checkout: true
+          skip_fetch: true
