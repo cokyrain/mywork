@@ -16,13 +16,13 @@ jobs:
     steps:
       # 1. 必须先检出当前仓库，以保留 .git 目录，为后续提交做准备
       - name: Checkout current repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # 2. 设置 Node.js 环境
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "26"
 
       # 3. 安装混淆工具
       - name: Install obfuscator
