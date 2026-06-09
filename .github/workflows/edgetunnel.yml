@@ -1,13 +1,11 @@
 name: Auto Obfuscate edgetunnel
 
 on:
-  # 1. 推送代码时触发
   push:
     branches:
       - main
-  # 2. 自动执行
   schedule:
-    - cron: "0 6 * * *" 
+    - cron: "0 6 * * *" # 每天凌晨 2 点 (UTC+8)
 
 permissions:
   contents: write
@@ -16,22 +14,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. 设置 Node.js 环境
+      # 1. 必须先检出当前仓库，以保留 .git 目录，为后续提交做准备
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      # 2. 设置 Node.js 环境
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      # 2. 安装混淆工具
+      # 3. 安装混淆工具
       - name: Install obfuscator
         run: npm install -g javascript-obfuscator
 
-      # 3. 拉取最新 _worker.js
+      # 4. 从 odaychina/edgetunnel 拉取最新源文件
       - name: Download Source File
         run: |
-          wget -O origin.js https://raw.githubusercontent.com/cokyrain/edgetunnel/main/_worker.js
+          wget -O origin.js https://raw.githubusercontent.com/odaychina/edgetunnel/main/_worker.js
 
-      # 4. 执行轻量级混淆操作
+      # 5. 执行轻量级混淆
       - name: Obfuscate JS
         run: |
           javascript-obfuscator origin.js --output _worker.js \
@@ -43,12 +45,10 @@ jobs:
           --rename-globals true \
           --transform-object-keys true
 
-      # 5. 强制提交并推送到当前仓库（直接覆盖）
+      # 6. 提交更改
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: main
           commit_message: '🤖 Auto obfuscate'
-          file_pattern: _worker.js
-          skip_checkout: true   # 跳过检出旧文件
-          skip_fetch: true      # 跳过拉取远程状态
+          file_pattern: _worker.js 
